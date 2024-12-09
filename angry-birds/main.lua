@@ -1,9 +1,14 @@
 local love = require "love"
 local Game = require "game"
+local config = require "config"
 local game
 
 function love.load()
     game = Game:new()
+    love.window.setMode(
+        config.windowWidth,
+        config.windowHeight
+    )
 end
 
 function love.update(dt)

@@ -19,16 +19,19 @@ function Bird:new(slingshot)
 end
 
 function Bird:update(dt, gravity, isFlying)
-    if isFlying then
+    -- Добавьте условие для столкновения с землей
+    if self.y + self.radius >= love.graphics.getHeight() - 50 then  -- Допустим, земля на высоте 50 пикселей от низа экрана
+        self.vy = 0  -- Останавливаем вертикальную скорость
+        self.y = love.graphics.getHeight() - self.radius  -- Устанавливаем птицу на уровне земли
+    else
+        -- Если птичка не на земле, применяем гравитацию
         self.vy = self.vy + gravity * dt
-        self.x = self.x + self.vx * dt
-        self.y = self.y + self.vy * dt
-
-        if self.y + self.radius >= 400 then
-            self.vx = self.vx * 0.98
-        end
     end
+
+    self.x = self.x + self.vx * dt
+    self.y = self.y + self.vy * dt
 end
+
 
 function Bird:checkGroundCollision(groundY)
     if self.y + self.radius >= groundY then
