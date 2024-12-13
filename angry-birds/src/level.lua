@@ -1,5 +1,5 @@
 -- level.lua
-local json = require("json") -- Библиотека для работы с JSON
+local json = require("libs.json") -- Библиотека для работы с JSON
 local Pig = require("pig")
 local Block = require("block")
 
