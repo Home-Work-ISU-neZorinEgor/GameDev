@@ -32,5 +32,4 @@ function Pig:draw()
     love.graphics.rectangle("fill", self.x, self.y, self.size, self.size)
 end
 
-
 return Pig

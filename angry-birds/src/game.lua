@@ -59,6 +59,12 @@ function game.update(dt)
 end
 
 function game.keypressed(key)
+    if key == "r" then
+        if currentLevel then
+            currentLevel:reset()  -- Перезапустить текущий уровень
+        end
+    end
+
     if state == "menu" then
         menu.keypressed(key)
     elseif state == "game" then
@@ -67,6 +73,7 @@ function game.keypressed(key)
         end
     end
 end
+
 
 function game.mousepressed(x, y, button)
     if state == "game" and currentLevel then

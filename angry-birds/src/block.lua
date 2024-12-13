@@ -87,4 +87,10 @@ function Block:draw()
     end
 end
 
+-- Метод reset для сброса состояния блока
+function Block:reset()
+    self.health = self.maxHealth  -- Восстановить здоровье до максимального значения
+    self.isDestroyed = false  -- Сбросить статус разрушения
+end
+
 return Block

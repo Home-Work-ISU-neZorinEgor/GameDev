@@ -25,6 +25,14 @@ function Level:load()
     self.camera.initialY = self.camera.y
 end
 
+-- В классе Level добавьте метод reset
+function Level:reset()
+    self:load()  -- Перезагрузить уровень
+    self.camera.x = self.camera.initialX
+    self.camera.y = self.camera.initialY
+end
+
+
 -- Метод обновления уровня
 function Level:update(dt)
     self.bird.update(dt)
@@ -98,5 +106,13 @@ function Level.fromJson(jsonData, bird, ground, camera)
 
     return Level.new(bird, ground, camera, pigs, blocks)
 end
+
+-- Метод для обработки нажатий клавиш
+function Level:keypressed(key)
+    if key == "r" then
+        self:restart()  -- Вызываем метод перезапуска уровня
+    end
+end
+
 
 return Level
