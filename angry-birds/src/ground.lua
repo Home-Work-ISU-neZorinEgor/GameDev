@@ -1,13 +1,15 @@
 -- ground.lua
-local ground = {x = -6000, y = 900, width = 9000, height = 20}
+local ground = {x = -6000, y = 900, width = 18000, height = 20}
+local groundImage
 
 function ground.load()
-    -- Можно добавить дополнительные параметры для земли, если потребуется
+    -- Загружаем изображение для земли
+    groundImage = love.graphics.newImage("asserts/images/ground.png")  -- Убедитесь, что у вас есть изображение
 end
 
 function ground.draw()
-    love.graphics.setColor(0.4, 0.8, 0.4)
-    love.graphics.rectangle("fill", ground.x, ground.y, ground.width, ground.height)
+    -- Рисуем изображение земли, растягивая его по ширине
+    love.graphics.draw(groundImage, ground.x, ground.y, 0, ground.width / groundImage:getWidth(), ground.height / groundImage:getHeight())
 end
 
 return ground

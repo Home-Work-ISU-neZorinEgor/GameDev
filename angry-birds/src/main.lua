@@ -1,3 +1,5 @@
+-- main.lua
+
 local game = require("game")
 
 function love.load()

@@ -174,7 +174,9 @@ function saveToFile()
         end
     end
     
-    output = output .. "] }"
+    output = output .. "]"
+    output = output .. ', "background": {"imagePath": "/asserts/images/parallax.png", "speedX": 0.1}}'
+
 
     -- Генерация имени нового файла
     local directory = "src/levels"

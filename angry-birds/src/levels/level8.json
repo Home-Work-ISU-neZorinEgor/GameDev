@@ -1,0 +1,1 @@
+{"pigs": [{ "x": 1471, "y": 643, "size": 30 }, ],"blocks": [{ "x": 1163, "y": 726, "width": 50, "height": 50, "type": 3 }, { "x": 1370, "y": 424, "width": 50, "height": 50, "type": 2 }, { "x": 1170, "y": 569, "width": 50, "height": 50, "type": 1 }], "background": {"imagePath": "/asserts/images/parallax.png", "speedX": 0.1}}

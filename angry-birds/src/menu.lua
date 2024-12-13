@@ -1,3 +1,5 @@
+-- menu.lua
+
 local menu = {}
 local editor = require("editor")  -- Подключаем экран редактора
 
