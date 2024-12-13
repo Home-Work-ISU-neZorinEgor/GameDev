@@ -14,9 +14,8 @@ local state = "menu" -- "menu" или "game"
 local function loadLevels()
     local levelFiles = love.filesystem.getDirectoryItems("levels")
     for _, file in ipairs(levelFiles) do
-        if file:match("%.lua$") then
-            local levelPath = "levels." .. file:sub(1, -5) -- Убираем .lua из имени файла
-            table.insert(levels, require(levelPath))
+        if file:match("%.json$") then
+            table.insert(levels, "levels/" .. file)
         end
     end
 end
@@ -25,8 +24,9 @@ end
 local function loadLevel(index)
     if index <= #levels then
         currentLevelIndex = index
-        local pigs, blocks = levels[index]()
-        currentLevel = Level.new(bird, ground, camera, pigs, blocks)
+        local fileName = levels[index]
+        local jsonData = love.filesystem.read(fileName)
+        currentLevel = Level.fromJson(jsonData, bird, ground, camera)
         currentLevel:load()
         state = "game"
     else

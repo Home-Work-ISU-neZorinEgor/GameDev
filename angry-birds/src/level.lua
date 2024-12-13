@@ -1,4 +1,8 @@
 -- level.lua
+local json = require("json") -- Библиотека для работы с JSON
+local Pig = require("pig")
+local Block = require("block")
+
 local Level = {}
 Level.__index = Level
 
@@ -68,5 +72,24 @@ function Level:draw()
 
     self.camera.reset()
 end
+
+function Level.fromJson(jsonData, bird, ground, camera)
+    local data = json.decode(jsonData)
+    local pigs = {}
+    local blocks = {}
+
+    for _, pigData in ipairs(data.pigs or {}) do
+        print("Pig coordinates:", pigData.x, pigData.y, "Size:", pigData.size)
+        table.insert(pigs, Pig.new(pigData.x, pigData.y, pigData.size))
+    end
+
+    for _, blockData in ipairs(data.blocks or {}) do
+        print("Block coordinates:", blockData.x, blockData.y, "Width:", blockData.width, "Height:", blockData.height, "Type:", blockData.type)
+        table.insert(blocks, Block.new(blockData.x, blockData.y, blockData.width, blockData.height, blockData.type))
+    end
+
+    return Level.new(bird, ground, camera, pigs, blocks)
+end
+
 
 return Level

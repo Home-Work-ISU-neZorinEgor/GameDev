@@ -27,6 +27,11 @@ function Block:update(bird)
         -- Если прочность блока 0, блок разрушен
         if self.health <= 0 then
             self.isDestroyed = true  -- Блок разрушен
+            
+            -- Логика замедления птички
+            local slowFactor = 0.8  -- Коэффициент замедления (например, 80% от текущей скорости)
+            bird.dx = bird.dx * slowFactor
+            bird.dy = bird.dy * slowFactor
         else
             -- Отскакивание птички от блока
             -- Определяем сторону, с которой произошло столкновение, и меняем направление скорости птички
@@ -42,6 +47,7 @@ function Block:update(bird)
         end
     end
 end
+
 
 -- Функция для отрисовки блока
 function Block:draw()
