@@ -1,4 +1,3 @@
--- level.lua
 local json = require("libs.json") -- Библиотека для работы с JSON
 local Pig = require("pig")
 local Block = require("block")
@@ -13,6 +12,8 @@ function Level.new(bird, ground, camera, pigs, blocks)
     level.camera = camera
     level.pigs = pigs or {}
     level.blocks = blocks or {}
+    level.destroyedPigs = 0  -- Количество уничтоженных свиней
+    level.destroyedBlocks = 0  -- Количество уничтоженных блоков
     return level
 end
 
@@ -41,8 +42,10 @@ function Level:update(dt)
         self.camera.setPosition(self.bird.x + self.bird.size / 2, self.bird.y + self.bird.size / 2)
     else
         self.camera.setFollowMode(false)
-        self.camera.resetPosition()
     end
+
+    -- Обновляем камеру
+    self.camera.update(dt)
 end
 
 -- Метод для обработки нажатий мыши
@@ -70,6 +73,11 @@ function Level:draw()
         block:draw()
     end
 
+    -- Отображаем количество уничтоженных птичек и блоков
+    love.graphics.setColor(1, 1, 1)  -- Белый цвет для текста
+    love.graphics.print("Pigs Destroyed: " .. self.destroyedPigs, love.graphics.getWidth() - 300, 20)
+    love.graphics.print("Blocks Destroyed: " .. self.destroyedBlocks, love.graphics.getWidth() - 300, 40)
+
     self.camera.reset()
 end
 
@@ -90,6 +98,5 @@ function Level.fromJson(jsonData, bird, ground, camera)
 
     return Level.new(bird, ground, camera, pigs, blocks)
 end
-
 
 return Level

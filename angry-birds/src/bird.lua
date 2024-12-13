@@ -1,8 +1,17 @@
 -- bird.lua
-local bird = {x = 100, y = 400, size = 20, dx = 0, dy = 0, isLaunched = false, bounces = 0}
-local gravity = 400
-local slingStartX, slingStartY = 200, 400  -- Сдвигаем рогатку вправо
-local maxStretch = 100
+
+-- Физика:
+
+-- 1. Гравитация: Ускоряет падение птички по вертикали (dy), добавляя постоянную силу в каждом кадре.
+-- 2. Движение: Птичка движется по осям X и Y в зависимости от её скорости (dx, dy).
+-- 3. Столкновение с землёй: Птичка отскакивает с уменьшенной вертикальной скоростью и замедляется по горизонтали из-за трения.
+-- 4. Рогатка: Мышь тянет птичку, ограничивая натяжение, и её начальная скорость зависит от растяжения рогатки.
+-- 5. Запуск: При отпускании мыши птичка получает скорость, пропорциональную растяжению.
+
+local bird = {x = 100, y = 400, size = 20, dx = 0, dy = 0, isLaunched = false, bounces = 0, startX = 100, startY = 400}
+local gravity = 500
+local slingStartX, slingStartY = 200, 500  -- Сдвигаем рогатку вправо
+local maxStretch = 200
 local launchMultiplier = 4
 local bounceFactor = 0.7
 local friction = 0.98
@@ -30,6 +39,27 @@ function bird.update(dt)
                 bird.isLaunched = false
             end
         end
+    else
+        -- Если птичка не выстрелена, она должна двигаться к месту, где была отпущена
+        local mouseX, mouseY = love.mouse.getX(), love.mouse.getY()
+        local stretchX = slingStartX - mouseX
+        local stretchY = slingStartY - mouseY
+        local stretchLength = math.sqrt(stretchX^2 + stretchY^2)
+
+        -- Ограничиваем натяжение
+        if stretchLength > maxStretch then
+            local scale = maxStretch / stretchLength
+            mouseX = slingStartX - stretchX * scale
+            mouseY = slingStartY - stretchY * scale
+        end
+
+        -- Рисуем только одну линию рогатки
+        love.graphics.setColor(0.5, 0.2, 0.1)  -- Цвет рогатки
+        love.graphics.line(slingStartX, slingStartY, mouseX, mouseY)
+
+        -- Рисуем птичку на конце натянутой линии
+        love.graphics.setColor(1, 1, 0)  -- Цвет птички (жёлтый)
+        love.graphics.rectangle("fill", mouseX - bird.size / 2, mouseY - bird.size / 2, bird.size, bird.size)
     end
 end
 
@@ -61,13 +91,13 @@ function bird.mousereleased(x, y, button)
 end
 
 function bird.draw()
-    love.graphics.setColor(1, 0, 0)  -- Цвет кубика (красный)
+    love.graphics.setColor(1, 1, 0)  -- Цвет птички (жёлтый)
 
     if bird.isLaunched then
-        -- Если кубик выстрелен, рисуем его в текущих координатах
+        -- Если птичка выстрелена, рисуем её в текущих координатах
         love.graphics.rectangle("fill", bird.x, bird.y, bird.size, bird.size)
     else
-        -- Если кубик не выстрелен, рисуем его на конце натянутой линии рогатки
+        -- Если птичка не выстрелена, рисуем её на конце натянутой линии рогатки
         local mouseX, mouseY = love.mouse.getX(), love.mouse.getY()
         local stretchX = slingStartX - mouseX
         local stretchY = slingStartY - mouseY
@@ -84,8 +114,8 @@ function bird.draw()
         love.graphics.setColor(0.5, 0.2, 0.1)  -- Цвет рогатки
         love.graphics.line(slingStartX, slingStartY, mouseX, mouseY)
 
-        -- Рисуем кубик на конце натянутой линии (эффект рогатки)
-        love.graphics.setColor(0, 1, 0)  -- Цвет кубика (зелёный)
+        -- Рисуем птичку на конце натянутой линии рогатки
+        love.graphics.setColor(1, 1, 0)  -- Цвет птички (жёлтый)
         love.graphics.rectangle("fill", mouseX - bird.size / 2, mouseY - bird.size / 2, bird.size, bird.size)
     end
 end

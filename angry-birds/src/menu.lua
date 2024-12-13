@@ -25,7 +25,7 @@ function menu.draw()
         love.graphics.setFont(love.graphics.newFont(24))
         love.graphics.printf("Main Menu", 0, 100, love.graphics.getWidth(), "center")
         love.graphics.printf("1. Levels", 0, 250, love.graphics.getWidth(), "center")
-        love.graphics.printf("2. Create Level", 0, 300, love.graphics.getWidth(), "center")
+        love.graphics.printf("2. Constructor", 0, 300, love.graphics.getWidth(), "center")
     elseif state == "levels" then
         love.graphics.setBackgroundColor(0.2, 0.2, 0.2)
         love.graphics.setFont(love.graphics.newFont(24))
@@ -38,6 +38,12 @@ function menu.draw()
         end
 
         love.graphics.printf("Press Enter to Start", 0, 400, love.graphics.getWidth(), "center")
+    elseif state == "constructor" then
+        love.graphics.setBackgroundColor(0.2, 0.2, 0.2)
+        love.graphics.setFont(love.graphics.newFont(24))
+        love.graphics.printf("Constructor Menu", 0, 100, love.graphics.getWidth(), "center")
+        love.graphics.printf("1. Create Level", 0, 250, love.graphics.getWidth(), "center")
+        love.graphics.printf("Press Escape to Return", 0, 300, love.graphics.getWidth(), "center")
     elseif state == "editor" then
         editor.draw()
     end
@@ -49,9 +55,8 @@ function menu.keypressed(key)
             -- Переход к игре
             state = "levels"  -- Переход в меню уровней
         elseif key == "2" then
-            -- Переход в редактор уровней
-            state = "editor"  -- Переход в экран редактора
-            editor.load()  -- Загружаем редактор
+            -- Переход в меню конструктора
+            state = "constructor"  -- Переход в меню конструктора
         end
     elseif state == "levels" then
         if key == "up" then
@@ -62,6 +67,14 @@ function menu.keypressed(key)
             if startGameCallback then
                 startGameCallback(selectedLevel)  -- Начинаем игру с выбранным уровнем
             end
+        elseif key == "escape" then
+            state = "main"  -- Возвращаемся в главное меню
+        end
+    elseif state == "constructor" then
+        if key == "1" then
+            -- Переход в редактор уровня
+            state = "editor"  -- Переход в экран редактора
+            editor.load()  -- Загружаем редактор
         elseif key == "escape" then
             state = "main"  -- Возвращаемся в главное меню
         end

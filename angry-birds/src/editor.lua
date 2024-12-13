@@ -1,4 +1,5 @@
 local lfs = require("lfs")
+
 local editor = {}
 
 local mouseWasDown = false  -- Флаг, отслеживающий, была ли кнопка мыши зажата
@@ -162,7 +163,7 @@ function saveToFile()
     output = output .. '"blocks": ['
     -- Теперь добавляем только те блоки, которые имеют тип 1, 2 или 3
     for i, block in ipairs(blocks) do
-        if block.type == 1 or block.type == 2 or block.type == 3 then
+        if i >= 4 and (block.type == 1 or block.type == 2 or block.type == 3) then
             output = output .. string.format(
                 '{ "x": %d, "y": %d, "width": %d, "height": %d, "type": %d }',
                 block.x, block.y, block.width, block.height, block.type
@@ -172,6 +173,7 @@ function saveToFile()
             end
         end
     end
+    
     output = output .. "] }"
 
     -- Генерация имени нового файла
