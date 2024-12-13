@@ -1,6 +1,7 @@
 local game = require("game")
 
 function love.load()
+    love.window.setMode(1920, 1080)
     game.load()
 end
 

@@ -26,7 +26,6 @@ function menu.draw()
         love.graphics.printf("Main Menu", 0, 100, love.graphics.getWidth(), "center")
         love.graphics.printf("1. Levels", 0, 250, love.graphics.getWidth(), "center")
         love.graphics.printf("2. Create Level", 0, 300, love.graphics.getWidth(), "center")
-        love.graphics.printf("Press Enter to Select", 0, 400, love.graphics.getWidth(), "center")
     elseif state == "levels" then
         love.graphics.setBackgroundColor(0.2, 0.2, 0.2)
         love.graphics.setFont(love.graphics.newFont(24))
