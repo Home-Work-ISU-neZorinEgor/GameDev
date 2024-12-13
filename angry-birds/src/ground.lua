@@ -1,5 +1,5 @@
 -- ground.lua
-local ground = {x = 0, y = 580, width = 1800, height = 20}
+local ground = {x = 0, y = 900, width = 3000, height = 20}
 
 function ground.load()
     -- Можно добавить дополнительные параметры для земли, если потребуется

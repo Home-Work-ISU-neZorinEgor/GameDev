@@ -14,3 +14,9 @@
 ### Дизайн:
 
 todo... )))))))
+
+### Зависимости:
+
+```shell
+luarocks install luafilesystem
+```

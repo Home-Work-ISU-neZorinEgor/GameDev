@@ -10,7 +10,7 @@ local blocks = {  -- Массив блоков
     {x = 20, y = 20, width = 50, height = 50, color = {1, 0, 0}, type = 1},  -- Первый блок (красный)
     {x = 80, y = 20, width = 50, height = 50, color = {0, 1, 0}, type = 2},  -- Второй блок (зеленый)
     {x = 140, y = 20, width = 50, height = 50, color = {0, 0, 1}, type = 3},  -- Третий блок (синий)
-    {x = 200, y = 20, width = 50, height = 50, color = {1, 1, 0}, type = 4}   -- Четвертый блок (желтый)
+    {x = 200, y = 20, width = 30, height = 30, color = {1, 1, 0}, type = 4}   -- Четвертый блок (желтый)
 }
 
 local newBlocks = {}  -- Массив для хранения только новых блоков
@@ -48,6 +48,10 @@ function editor.update(dt)
                             color = {block.color[1], block.color[2], block.color[3]},  -- Используем цвет родителя
                             type = block.type  -- Новый блок будет иметь тот же тип
                         }
+                        if block.type == 4 then
+                            newBlock.height = 30
+                            newBlock.width = 30
+                        end
                         table.insert(blocks, newBlock)  -- Добавляем новый блок в список
                         table.insert(newBlocks, newBlock)  -- Добавляем новый блок в список новых блоков
                         draggedBlock = newBlock  -- Начинаем перетаскивать новый блок
@@ -140,27 +144,32 @@ end
 function saveToFile()
     local output = '{'
     output = output .. '"pigs": ['
+
+    -- Проходим по новым блокам и добавляем в pigs, если тип блока не 1, 2 или 3
     for i, block in ipairs(newBlocks) do
-        output = output .. string.format(
-            '{ "x": %d, "y": %d, "size": %d }',
-            block.x, block.y, block.width
-        )
-        if i < #newBlocks then
-            output = output .. ", "
+        if block.type ~= 1 and block.type ~= 2 and block.type ~= 3 then
+            output = output .. string.format(
+                '{ "x": %d, "y": %d, "size": %d }',
+                block.x, block.y, block.width
+            )
+            if i < #newBlocks then
+                output = output .. ", "
+            end
         end
     end
     output = output .. '],'
 
     output = output .. '"blocks": ['
+    -- Теперь добавляем только те блоки, которые имеют тип 1, 2 или 3
     for i, block in ipairs(blocks) do
-        if i <= 3 then
+        if block.type == 1 or block.type == 2 or block.type == 3 then
             output = output .. string.format(
                 '{ "x": %d, "y": %d, "width": %d, "height": %d, "type": %d }',
                 block.x, block.y, block.width, block.height, block.type
             )
-        end
-        if i < #blocks then
-            output = output .. ", "
+            if i < #blocks then
+                output = output .. ", "
+            end
         end
     end
     output = output .. "] }"
@@ -180,7 +189,6 @@ function saveToFile()
         print("Не удалось открыть файл для записи.")
     end
 end
-
 
 function editor.draw()
     love.graphics.setBackgroundColor(0, 0, 0)  -- Белый экран

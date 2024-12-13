@@ -1,7 +1,7 @@
 -- bird.lua
 local bird = {x = 100, y = 400, size = 20, dx = 0, dy = 0, isLaunched = false, bounces = 0}
 local gravity = 400
-local slingStartX, slingStartY = 100, 400
+local slingStartX, slingStartY = 200, 400  -- Сдвигаем рогатку вправо
 local maxStretch = 100
 local launchMultiplier = 4
 local bounceFactor = 0.7
@@ -18,8 +18,8 @@ function bird.update(dt)
         bird.y = bird.y + bird.dy * dt
 
         -- Столкновение с землей
-        if bird.y + bird.size > 580 then
-            bird.y = 580 - bird.size
+        if bird.y + bird.size > 900 then
+            bird.y = 900 - bird.size
             bird.dy = -bird.dy * bounceFactor
             bird.dx = bird.dx * friction
             bird.bounces = bird.bounces + 1
@@ -53,6 +53,7 @@ function bird.mousereleased(x, y, button)
             stretchY = stretchY * scale
         end
 
+        -- Устанавливаем начальную скорость (dx, dy) в зависимости от растяжения рогатки
         bird.dx = stretchX * launchMultiplier
         bird.dy = stretchY * launchMultiplier
         bird.isLaunched = true
@@ -60,23 +61,32 @@ function bird.mousereleased(x, y, button)
 end
 
 function bird.draw()
-    love.graphics.setColor(1, 0, 0)
-    love.graphics.rectangle("fill", bird.x, bird.y, bird.size, bird.size)
+    love.graphics.setColor(1, 0, 0)  -- Цвет кубика (красный)
 
-    if not bird.isLaunched then
+    if bird.isLaunched then
+        -- Если кубик выстрелен, рисуем его в текущих координатах
+        love.graphics.rectangle("fill", bird.x, bird.y, bird.size, bird.size)
+    else
+        -- Если кубик не выстрелен, рисуем его на конце натянутой линии рогатки
         local mouseX, mouseY = love.mouse.getX(), love.mouse.getY()
         local stretchX = slingStartX - mouseX
         local stretchY = slingStartY - mouseY
         local stretchLength = math.sqrt(stretchX^2 + stretchY^2)
 
+        -- Ограничиваем натяжение
         if stretchLength > maxStretch then
             local scale = maxStretch / stretchLength
             mouseX = slingStartX - stretchX * scale
             mouseY = slingStartY - stretchY * scale
         end
 
-        love.graphics.setColor(0.5, 0.2, 0.1)
+        -- Рисуем только одну линию рогатки
+        love.graphics.setColor(0.5, 0.2, 0.1)  -- Цвет рогатки
         love.graphics.line(slingStartX, slingStartY, mouseX, mouseY)
+
+        -- Рисуем кубик на конце натянутой линии (эффект рогатки)
+        love.graphics.setColor(0, 1, 0)  -- Цвет кубика (зелёный)
+        love.graphics.rectangle("fill", mouseX - bird.size / 2, mouseY - bird.size / 2, bird.size, bird.size)
     end
 end
 
