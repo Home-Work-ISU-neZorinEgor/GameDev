@@ -147,23 +147,15 @@ function Level:draw()
 
     if self.isGameOver then
         -- Выводим статистику после завершения игры
+        self.camera:resetPosition()
         love.graphics.print("Game Over!", 400, 200)
         love.graphics.print("Destroyed Blocks: " .. self.destroyedBlocks, 400, 220)
         love.graphics.print("Used Birds: " .. self.usedBirds, 400, 240)
         love.graphics.print("Destroyed Pigs: " .. self.destroyedPigs, 400, 260)
+
     end
 
     self.camera.reset()
-end
-
--- Функция для обработки уничтожения блока
-function Level:blockDestroyed(block)
-    self.destroyedBlocks = self.destroyedBlocks + 1
-end
-
--- Функция для обработки уничтожения свиньи
-function Level:pigDestroyed(pig)
-    self.destroyedPigs = self.destroyedPigs + 1
 end
 
 -- Загрузка уровня из JSON
