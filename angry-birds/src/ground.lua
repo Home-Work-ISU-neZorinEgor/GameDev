@@ -1,5 +1,5 @@
 -- ground.lua
-local ground = {x = -6000, y = 900, width = 18000, height = 20}
+local ground = {x = -6000, y = 880, width = 18000, height = 20}
 local groundImage
 
 function ground.load()

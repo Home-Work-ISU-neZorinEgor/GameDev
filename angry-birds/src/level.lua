@@ -13,7 +13,7 @@ local Block = require("block")
 local Level = {}
 Level.__index = Level
 
-function Level.new(bird, ground, camera, pigs, blocks, background)
+function Level.new(bird, ground, camera, pigs, blocks, background, birdsCount)
     local level = setmetatable({}, Level)
     level.bird = bird
     level.ground = ground
@@ -23,6 +23,9 @@ function Level.new(bird, ground, camera, pigs, blocks, background)
     level.background = background or nil  -- Добавляем фоновое изображение
     level.destroyedPigs = 0  -- Количество уничтоженных свиней
     level.destroyedBlocks = 0  -- Количество уничтоженных блоков
+    level.remainingShots = birdsCount or 3  -- Количество оставшихся выстрелов, загружаем из JSON
+    level.usedBirds = 0  -- Количество использованных птичек
+    level.isGameOver = false  -- Флаг окончания игры
     return level
 end
 
@@ -41,15 +44,23 @@ function Level:load()
     end
 end
 
--- В классе Level добавьте метод reset
 function Level:reset()
-    self:load()  -- Перезагрузить уровень
-    self.camera.x = self.camera.initialX
-    self.camera.y = self.camera.initialY
+    self.camera.x = 0
+    self.camera.y = 0
+    self:load()
+    self.remainingShots = self.birdCount or 3  -- Сбрасываем количество выстрелов на значение из JSON
+    self.usedBirds = 0  -- Сбрасываем количество использованных птичек
+    self.destroyedPigs = 0  -- Сбрасываем уничтоженные свиней
+    self.destroyedBlocks = 0  -- Сбрасываем уничтоженные блоки
+    self.isGameOver = false  -- Сбрасываем флаг окончания игры
 end
 
 -- Метод обновления уровня
 function Level:update(dt)
+    if self.isGameOver then
+        return  -- Прекращаем обновление, если игра окончена
+    end
+
     self.bird.update(dt)
 
     for _, pig in ipairs(self.pigs) do
@@ -74,8 +85,12 @@ function Level:update(dt)
 
     -- Обновляем камеру
     self.camera.update(dt)
-end
 
+    -- Проверка на завершение игры (когда использованы все выстрелы)
+    if self.remainingShots <= 0 and not self.isGameOver then
+        self.isGameOver = true  -- Игра завершена
+    end
+end
 
 -- Метод для обработки нажатий мыши
 function Level:mousepressed(x, y, button)
@@ -84,7 +99,18 @@ end
 
 -- Метод для обработки отпускания кнопки мыши
 function Level:mousereleased(x, y, button)
-    self.bird.mousereleased(x, y, button)
+    if self.isGameOver then
+        return  -- Если игра окончена, не разрешаем делать выстрел
+    end
+
+    if self.remainingShots > 0 then
+        self.bird.mousereleased(x, y, button)
+        if self.bird.isLaunched then
+            -- Если выстрел был сделан, уменьшаем количество выстрелов
+            self.remainingShots = self.remainingShots - 1
+            self.usedBirds = self.usedBirds + 1  -- Увеличиваем количество использованных птичек
+        end
+    end
 end
 
 -- Метод отрисовки уровня
@@ -100,7 +126,7 @@ function Level:draw()
         
         -- Рисуем фон бесконечно
         for i = 0, numRepeats - 1 do
-            love.graphics.draw(self.background.image, -backgroundX + i * self.background.width, 0)
+            love.graphics.draw(self.background.image, -5 * backgroundX + i * self.background.width, 0)
         end
     end
 
@@ -115,23 +141,42 @@ function Level:draw()
         block:draw()
     end
 
+    -- Вывод статистики
+    love.graphics.setColor(1, 1, 1)
+    love.graphics.print("Remaining Shots: " .. self.remainingShots, 10, 10)
+
+    if self.isGameOver then
+        -- Выводим статистику после завершения игры
+        love.graphics.print("Game Over!", 400, 200)
+        love.graphics.print("Destroyed Blocks: " .. self.destroyedBlocks, 400, 220)
+        love.graphics.print("Used Birds: " .. self.usedBirds, 400, 240)
+        love.graphics.print("Destroyed Pigs: " .. self.destroyedPigs, 400, 260)
+    end
+
     self.camera.reset()
 end
 
+-- Функция для обработки уничтожения блока
+function Level:blockDestroyed(block)
+    self.destroyedBlocks = self.destroyedBlocks + 1
+end
 
+-- Функция для обработки уничтожения свиньи
+function Level:pigDestroyed(pig)
+    self.destroyedPigs = self.destroyedPigs + 1
+end
 
+-- Загрузка уровня из JSON
 function Level.fromJson(jsonData, bird, ground, camera)
     local data = json.decode(jsonData)
     local pigs = {}
     local blocks = {}
 
     for _, pigData in ipairs(data.pigs or {}) do
-        print("Pig coordinates:", pigData.x, pigData.y, "Size:", pigData.size)
         table.insert(pigs, Pig.new(pigData.x, pigData.y, pigData.size))
     end
 
     for _, blockData in ipairs(data.blocks or {}) do
-        print("Block coordinates:", blockData.x, blockData.y, "Width:", blockData.width, "Height:", blockData.height, "Type:", blockData.type)
         table.insert(blocks, Block.new(blockData.x, blockData.y, blockData.width, blockData.height, blockData.type))
     end
 
@@ -141,15 +186,17 @@ function Level.fromJson(jsonData, bird, ground, camera)
         speedX = data.background and data.background.speedX or 0.5,
     }
 
-    return Level.new(bird, ground, camera, pigs, blocks, background)
+    -- Загружаем количество птичек из JSON
+    local birdsCount = data.birdsCount or 3  -- Если поле не указано, используем 3 птички по умолчанию
+
+    return Level.new(bird, ground, camera, pigs, blocks, background, birdsCount)
 end
 
 -- Метод для обработки нажатий клавиш
 function Level:keypressed(key)
     if key == "r" then
-        self:restart()  -- Вызываем метод перезапуска уровня
+        self:reset()  -- Вызываем метод перезапуска уровня
     end
 end
-
 
 return Level

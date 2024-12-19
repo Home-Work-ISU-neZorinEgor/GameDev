@@ -2,29 +2,30 @@ local lfs = require("lfs")
 
 local editor = {}
 
-local mouseWasDown = false  -- Флаг, отслеживающий, была ли кнопка мыши зажата
-local isDragging = false  -- Флаг, указывающий, перетаскиваем ли мы блок
-local draggedBlock = nil  -- Перемещаемый блок
-local draggedCopy = nil  -- Копия блока
-local originalPosition = nil  -- Хранит исходное положение блока
-local blocks = {  -- Массив блоков
-    {x = 20, y = 20, width = 50, height = 50, color = {1, 0, 0}, type = 1},  -- Первый блок (красный)
-    {x = 80, y = 20, width = 50, height = 50, color = {0, 1, 0}, type = 2},  -- Второй блок (зеленый)
-    {x = 140, y = 20, width = 50, height = 50, color = {0, 0, 1}, type = 3},  -- Третий блок (синий)
-    {x = 200, y = 20, width = 30, height = 30, color = {1, 1, 0}, type = 4}   -- Четвертый блок (желтый)
+local mouseWasDown = false                                                          -- Флаг, отслеживающий, была ли кнопка мыши зажата
+local isDragging = false                                                            -- Флаг, указывающий, перетаскиваем ли мы блок
+local draggedBlock = nil                                                            -- Перемещаемый блок
+local draggedCopy = nil                                                             -- Копия блока
+local originalPosition = nil                                                        -- Хранит исходное положение блока
+local blocks = {                                                                    -- Массив блоков
+    {x = 20, y = 20, width = 50, height = 50, color = {0.4, 0.8, 0.4}, type = 1 },  -- Целый блок зеленый [3/3]
+    {x = 80, y = 20, width = 50, height = 50, color = {1, 1, 0}, type = 2 },        -- Блок средней разрушенности [2/3]
+    {x = 140, y = 20, width = 50, height = 50, color = {1, 0, 0}, type = 3 },       -- Почти сломанный блок [1/3]
+    {x = 200, y = 20, width = 30, height = 30, color = {0, 1, 0}, type = 4 }        -- Свинка
 }
 
-local newBlocks = {}  -- Массив для хранения только новых блоков
-local dropZone = {x = 20, y = 80, width = 1880, height = 800}  -- Зона, в которую можно помещать блоки
-
--- Позиция кнопки сохранения
-local saveButton = {x = 1700, y = 890, width = 200, height = 50}
+local newBlocks = {}                                                                -- Массив для хранения только новых блоков
+local dropZone = {x = 20, y = 80, width = 1880, height = 800}                       -- Зона, в которую можно помещать блоки
+local saveButton = {x = 1700, y = 890, width = 200, height = 50}                    -- Позиция кнопки сохранения
+local pigCount = 3                                                                  -- Начальное количество птичек
+local plusButton = {x = 1600, y = 20, width = 50, height = 50}                     -- Кнопка "+"
+local minusButton = {x = 1540, y = 20, width = 50, height = 50}                    -- Кнопка "-"
 
 function editor.load()
 end
 
 function editor.update(dt)
-    local mouseX, mouseY = love.mouse.getPosition()  -- Получаем координаты мыши
+    local mouseX, mouseY = love.mouse.getPosition()                                 -- Координаты мыши
 
     -- Обработка нажатия кнопки мыши
     if love.mouse.isDown(1) then
@@ -33,6 +34,13 @@ function editor.update(dt)
             if mouseX >= saveButton.x and mouseX <= saveButton.x + saveButton.width and mouseY >= saveButton.y and mouseY <= saveButton.y + saveButton.height then
                 -- Сохраняем данные в файл
                 saveToFile()
+            end
+
+            -- Проверяем, попала ли мышь в область кнопок "+" или "-"
+            if mouseX >= plusButton.x and mouseX <= plusButton.x + plusButton.width and mouseY >= plusButton.y and mouseY <= plusButton.y + plusButton.height then
+                pigCount = pigCount + 1  -- Увеличиваем количество птичек
+            elseif mouseX >= minusButton.x and mouseX <= minusButton.x + minusButton.width and mouseY >= minusButton.y and mouseY <= minusButton.y + minusButton.height then
+                pigCount = math.max(1, pigCount - 1)  -- Уменьшаем количество птичек (не меньше 1)
             end
 
             -- Проверяем, попала ли мышь в область одного из блоков
@@ -71,39 +79,8 @@ function editor.update(dt)
         end
     else
         if mouseWasDown then
-            if isDragging then
-                -- Печатаем информацию о новых блоках в нужном формате
-                local output = '{'
-                output = output .. '"pigs": ['
-                for i, block in ipairs(newBlocks) do
-                    output = output .. string.format(
-                        '{ "x": %d, "y": %d, "size": %d }',
-                        block.x, block.y, block.width
-                    )
-                    if i < #newBlocks then
-                        output = output .. ", "
-                    end
-                end
-                output = output .. '],'
-
-                -- Теперь выводим блоки (первые три)
-                output = output .. '"blocks": ['
-                for i, block in ipairs(blocks) do
-                    -- Для первых трех блоков выводим полный формат
-                    if i <= 3 then
-                        output = output .. string.format(
-                            '{ "x": %d, "y": %d, "width": %d, "height": %d, "type": %d }',
-                            block.x, block.y, block.width, block.height, block.type
-                        )
-                    end
-                    if i < #blocks then
-                        output = output .. ", "
-                    end
-                end
-                output = output .. "] }"
-                print(output)  -- Выводим данные в нужном формате
-
-                -- Перемещаем блок в новую позицию (ограниченную зоной)
+            -- Перемещаем блок в новую позицию (ограниченную зоной)
+            if isDragging and draggedCopy then
                 draggedBlock.x = math.max(dropZone.x, math.min(draggedCopy.x, dropZone.x + dropZone.width - draggedBlock.width))
                 draggedBlock.y = math.max(dropZone.y, math.min(draggedCopy.y, dropZone.y + dropZone.height - draggedBlock.height))
             end
@@ -175,7 +152,8 @@ function saveToFile()
     end
     
     output = output .. "]"
-    output = output .. ', "background": {"imagePath": "/asserts/images/parallax.png", "speedX": 0.1}}'
+    output = output .. ', "background": {"imagePath": "/asserts/images/parallax.png", "speedX": 0.1}'
+    output = output .. ', "birdsCount": ' .. pigCount .. '}'
 
 
     -- Генерация имени нового файла
@@ -212,6 +190,18 @@ function editor.draw()
     love.graphics.rectangle("fill", saveButton.x, saveButton.y, saveButton.width, saveButton.height)  -- Рисуем кнопку
     love.graphics.setColor(1, 1, 1)  -- Черный цвет для текста
     love.graphics.print("Save level", saveButton.x + 40, saveButton.y + 10)  -- Текст на кнопке
+
+    -- Отрисовываем кнопки "+" и "-"
+    love.graphics.setColor(1, 0, 0)  -- Зеленый для "+" и "-"
+    love.graphics.rectangle("fill", minusButton.x, minusButton.y, minusButton.width, minusButton.height)  -- Кнопка "-"
+    love.graphics.setColor(0, 1, 0)
+    love.graphics.rectangle("fill", plusButton.x, plusButton.y, plusButton.width, plusButton.height)  -- Кнопка "+"
+    love.graphics.setColor(1, 1, 1)  -- Белый цвет для текста
+    love.graphics.print("-", minusButton.x + 20, minusButton.y + 10)  -- Текст на кнопке "-"
+    love.graphics.print("+", plusButton.x + 20, plusButton.y + 10)  -- Текст на кнопке "+"
+
+    -- Отображаем количество птичек
+    love.graphics.print("Birds: " .. pigCount, 1400, 20)
 
     -- Если перетаскиваем, рисуем копию блока
     if draggedCopy then

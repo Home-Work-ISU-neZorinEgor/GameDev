@@ -90,21 +90,18 @@ end
 
 function menu.mousepressed(x, y, button, istouch, presses)
     if state == "editor" then
-        print("Mouse button pressed at: (" .. x .. ", " .. y .. ")")
         editor.mousepressed(x, y, button, istouch, presses)  -- Передаем клик в редактор
     end
 end
 
 function menu.mousemoved(x, y, dx, dy, istouch)
     if state == "editor" then
-        print("Mouse moved to: (" .. x .. ", " .. y .. ")")
         editor.mousemoved(x, y, dx, dy, istouch)  -- Передаем движение мыши в редактор
     end
 end
 
 function menu.mousereleased(x, y, button, istouch, presses)
     if state == "editor" then
-        print("Mouse button released at: (" .. x .. ", " .. y .. ")")
         editor.mousereleased(x, y, button, istouch, presses)  -- Передаем отпускание кнопки в редактор
     end
 end

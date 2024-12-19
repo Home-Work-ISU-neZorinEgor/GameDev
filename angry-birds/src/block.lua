@@ -31,6 +31,7 @@ function Block:update(bird)
         -- Если блок не разрушен, проверим его прочность
         if bird.dx^2 + bird.dy^2 > 137321 then  -- Если скорость птицы достаточна для разрушения
             self.health = self.health - 1  -- Уменьшаем прочность
+            love.audio.newSource("asserts/sounds/block_collision.mp3", "static"):play()
         end
 
         -- Если прочность блока 0, блок разрушен

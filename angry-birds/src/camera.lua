@@ -70,11 +70,4 @@ function camera.update(dt)
     end
 end
 
--- Функция для отображения статистики
-function camera.drawStats()
-    love.graphics.setColor(1, 1, 1)  -- Белый цвет для текста
-    love.graphics.print("Pigs Destroyed: " .. camera.birdsDestroyed, camera.x + camera.width - 200, camera.y + 20)
-    love.graphics.print("Blocks Destroyed: " .. camera.blocksDestroyed, camera.x + camera.width - 200, camera.y + 40)
-end
-
 return camera

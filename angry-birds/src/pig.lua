@@ -8,6 +8,7 @@ function Pig.new(x, y, size)
     pig.y = y
     pig.size = size
     pig.hit = false
+    pig.soundPlayed = false  -- Добавляем флаг для отслеживания воспроизведения звука
     return pig
 end
 
@@ -24,12 +25,21 @@ end
 
 -- Функция для отрисовки свинки
 function Pig:draw()
+    -- Проверяем, был ли уже проигран звук
     if not self.hit then
         love.graphics.setColor(0, 1, 0)
     else
         love.graphics.setColor(0.5, 0.5, 0.5)
+
+        -- Если звук еще не был проигран, проигрываем его и устанавливаем флаг
+        if not self.soundPlayed then
+            local sound = love.audio.newSource("asserts/sounds/pig_death.mp3", "static")
+            sound:play()
+            self.soundPlayed = true  -- Устанавливаем флаг, что звук был проигран
+        end
     end
     love.graphics.rectangle("fill", self.x, self.y, self.size, self.size)
 end
+
 
 return Pig

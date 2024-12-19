@@ -6,7 +6,6 @@ local menu = require("menu")
 
 local game = {}
 local levels = {}
-local currentLevelIndex = 1
 local currentLevel = nil
 local state = "menu" -- "menu" или "game"
 
@@ -23,7 +22,6 @@ end
 -- Загрузить уровень
 local function loadLevel(index)
     if index <= #levels then
-        currentLevelIndex = index
         local fileName = levels[index]
         local jsonData = love.filesystem.read(fileName)
         currentLevel = Level.fromJson(jsonData, bird, ground, camera)

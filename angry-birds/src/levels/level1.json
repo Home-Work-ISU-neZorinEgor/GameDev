@@ -1,0 +1,72 @@
+{
+    "pigs": [
+        {
+            "x": 1297,
+            "y": 798,
+            "size": 30
+        }
+    ],
+    "blocks": [
+        {
+            "x": 1375,
+            "y": 830,
+            "width": 50,
+            "height": 50,
+            "type": 3
+        },
+        {
+            "x": 1376,
+            "y": 780,
+            "width": 50,
+            "height": 50,
+            "type": 2
+        },
+        {
+            "x": 1287,
+            "y": 828,
+            "width": 50,
+            "height": 50,
+            "type": 1
+        },
+        {
+            "x": 1202,
+            "y": 830,
+            "width": 50,
+            "height": 50,
+            "type": 2
+        },
+        {
+            "x": 1203,
+            "y": 780,
+            "width": 50,
+            "height": 50,
+            "type": 2
+        },
+        {
+            "x": 1237,
+            "y": 730,
+            "width": 50,
+            "height": 50,
+            "type": 2
+        },
+        {
+            "x": 1289,
+            "y": 731,
+            "width": 50,
+            "height": 50,
+            "type": 1
+        },
+        {
+            "x": 1338,
+            "y": 729,
+            "width": 50,
+            "height": 50,
+            "type": 2
+        }
+    ],
+    "background": {
+        "imagePath": "/asserts/images/parallax.png",
+        "speedX": 0.1
+    },
+    "birdsCount": 5
+}
