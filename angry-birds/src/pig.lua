@@ -14,13 +14,16 @@ end
 
 -- Функция для обновления свинки
 function Pig:update(bird)
+    -- Проверка на столкновение с птичкой
     if not self.hit and
         bird.x + bird.size > self.x and
         bird.x < self.x + self.size and
         bird.y + bird.size > self.y and
         bird.y < self.y + self.size then
-        self.hit = true
+        self.hit = true  -- Отметить, что свинка задетая
+        return true  -- Возвращаем true, если свинка была задетая
     end
+    return false  -- Если свинка не была задетая
 end
 
 -- Функция для отрисовки свинки
@@ -40,6 +43,5 @@ function Pig:draw()
     end
     love.graphics.rectangle("fill", self.x, self.y, self.size, self.size)
 end
-
 
 return Pig

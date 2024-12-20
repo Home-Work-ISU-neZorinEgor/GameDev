@@ -9,7 +9,7 @@
 -- 5. Запуск: При отпускании мыши птичка получает скорость, пропорциональную растяжению.
 
 local bird = {x = 100, y = 400, size = 20, dx = 0, dy = 0, isLaunched = false, bounces = 0, startX = 100, startY = 400}
-local gravity = 500
+local gravity = 700
 local slingStartX, slingStartY = 200, 500  -- Сдвигаем рогатку вправо
 local maxStretch = 200
 local launchMultiplier = 4
@@ -31,7 +31,6 @@ function bird.update(dt)
     if bird.isLaunched then
         -- Применяем гравитацию
         bird.dy = bird.dy + gravity * dt
-
         -- Обновляем позицию птички
         bird.x = bird.x + bird.dx * dt
         bird.y = bird.y + bird.dy * dt

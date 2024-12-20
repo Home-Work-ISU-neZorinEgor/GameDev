@@ -25,7 +25,8 @@ function Block.new(x, y, width, height, health)
 end
 
 -- Функция для обновления блока
-function Block:update(bird)
+-- Функция для обновления блока
+function Block:update(bird, level)
     -- Проверка столкновения с птицей
     if not self.isDestroyed and bird.x + bird.size > self.x and bird.x < self.x + self.width and bird.y + bird.size > self.y and bird.y < self.y + self.height then
         -- Если блок не разрушен, проверим его прочность
@@ -37,7 +38,8 @@ function Block:update(bird)
         -- Если прочность блока 0, блок разрушен
         if self.health <= 0 then
             self.isDestroyed = true  -- Блок разрушен
-            
+            level.destroyedBlocks = level.destroyedBlocks + 1  -- Увеличиваем счетчик разрушенных блоков
+
             -- Логика замедления птички
             local slowFactor = 0.8  -- Коэффициент замедления (например, 80% от текущей скорости)
             bird.dx = bird.dx * slowFactor
@@ -66,6 +68,7 @@ function Block:update(bird)
         end
     end
 end
+
 
 -- Функция для отрисовки блока
 function Block:draw()

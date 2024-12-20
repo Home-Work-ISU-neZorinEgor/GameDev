@@ -56,6 +56,7 @@ function Level:reset()
 end
 
 -- Метод обновления уровня
+-- Метод обновления уровня
 function Level:update(dt)
     if self.isGameOver then
         return  -- Прекращаем обновление, если игра окончена
@@ -63,14 +64,27 @@ function Level:update(dt)
 
     self.bird.update(dt)
 
+    -- Проверка на остановку птички
+    if math.abs(self.bird.dx) < 0.1 and math.abs(self.bird.dy) < 0.1 then
+        self.bird.isStopped = true  -- Устанавливаем флаг остановки птички
+    else
+        self.bird.isStopped = false  -- Птичка все еще в движении
+    end
+
+    -- Обновление свинок и подсчёт задетых
     for _, pig in ipairs(self.pigs) do
-        pig:update(self.bird)
+        if pig:update(self.bird) then
+            -- Если свинка была задетая, увеличиваем счётчик задетых свинок
+            self.destroyedPigs = self.destroyedPigs + 1
+        end
     end
 
+    -- Обновление блоков и передача уровня для обновления статистики разрушений
     for _, block in ipairs(self.blocks) do
-        block:update(self.bird)
+        block:update(self.bird, self)  -- Передаем self для обновления destroyedBlocks
     end
 
+    -- Если птичка запущена и двигается
     if self.bird.isLaunched and (self.bird.dx ~= 0 or self.bird.dy ~= 0) then
         self.camera.setFollowMode(true)
         local cameraY = self.bird.y + self.bird.size / 2
@@ -86,11 +100,12 @@ function Level:update(dt)
     -- Обновляем камеру
     self.camera.update(dt)
 
-    -- Проверка на завершение игры (когда использованы все выстрелы)
-    if self.remainingShots <= 0 and not self.isGameOver then
+    -- Когда все выстрелы закончились и птичка остановилась, показываем статистику
+    if self.remainingShots <= 0 and self.bird.isStopped then
         self.isGameOver = true  -- Игра завершена
     end
 end
+
 
 -- Метод для обработки нажатий мыши
 function Level:mousepressed(x, y, button)
@@ -141,22 +156,25 @@ function Level:draw()
         block:draw()
     end
 
-    -- Вывод статистики
+    -- Выводим оставшиеся выстрелы
     love.graphics.setColor(1, 1, 1)
     love.graphics.print("Remaining Shots: " .. self.remainingShots, 10, 10)
 
     if self.isGameOver then
-        -- Выводим статистику после завершения игры
-        self.camera:resetPosition()
-        love.graphics.print("Game Over!", 400, 200)
-        love.graphics.print("Destroyed Blocks: " .. self.destroyedBlocks, 400, 220)
-        love.graphics.print("Used Birds: " .. self.usedBirds, 400, 240)
-        love.graphics.print("Destroyed Pigs: " .. self.destroyedPigs, 400, 260)
-
+        -- Выводим статистику после завершения игры, только если птичка остановилась
+        if self.bird.isStopped then
+            self.camera:resetPosition()
+            love.graphics.print("Game Over!", 400, 200)
+            love.graphics.print("Destroyed Blocks: " .. self.destroyedBlocks .. "/" .. #self.blocks, 400, 220)
+            love.graphics.print("Used Birds: " .. self.usedBirds, 400, 240)
+            love.graphics.print("Destroyed Pigs: " .. self.destroyedPigs, 400, 260)
+        end
     end
 
     self.camera.reset()
 end
+
+
 
 -- Загрузка уровня из JSON
 function Level.fromJson(jsonData, bird, ground, camera)

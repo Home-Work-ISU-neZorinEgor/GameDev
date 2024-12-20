@@ -172,8 +172,6 @@ function saveToFile()
 end
 
 function editor.draw()
-    love.graphics.setBackgroundColor(0, 0, 0)  -- Белый экран
-
     -- Отрисовываем зону для кубиков
     love.graphics.setColor(0.8, 0.8, 0.8)  -- Светло-серый цвет для зоны
     love.graphics.rectangle("line", dropZone.x, dropZone.y, dropZone.width, dropZone.height)  -- Рисуем прямоугольник зоны
