@@ -63,7 +63,7 @@ function camera.resetPosition()
     camera.y = camera.y + (targetY - camera.y) / camera.returnSpeed
 end
 
--- Метод для обновления камеры
+-- Метод для обновления камеры  
 function camera.update(dt)
     if not camera.isFollowing then
         camera.resetPosition()

@@ -6,7 +6,6 @@ local mouseWasDown = false                                                      
 local isDragging = false                                                            -- Флаг, указывающий, перетаскиваем ли мы блок
 local draggedBlock = nil                                                            -- Перемещаемый блок
 local draggedCopy = nil                                                             -- Копия блока
-local originalPosition = nil                                                        -- Хранит исходное положение блока
 local blocks = {                                                                    -- Массив блоков
     {x = 20, y = 20, width = 50, height = 50, color = {0.4, 0.8, 0.4}, type = 1 },  -- Целый блок зеленый [3/3]
     {x = 80, y = 20, width = 50, height = 50, color = {1, 1, 0}, type = 2 },        -- Блок средней разрушенности [2/3]

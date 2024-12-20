@@ -66,13 +66,10 @@ function bird.update(dt)
 
         -- Рисуем две линии рогатки
         love.graphics.setColor(0.5, 0.2, 0.1)  -- Цвет рогатки
-        
         -- Первая линия
         love.graphics.line(slingStartX, slingStartY, mouseX, mouseY)
-        
         -- Вторая линия (отражённая)
         love.graphics.line(slingStartX * 2 - slingStartX, slingStartY, mouseX * 2 - slingStartX, mouseY)
-        
         -- Рисуем птичку на конце натянутых линий
         love.graphics.setColor(1, 1, 0)  -- Цвет птички (жёлтый)
         love.graphics.rectangle("fill", mouseX - bird.size / 2, mouseY - bird.size / 2, bird.size, bird.size)
@@ -130,17 +127,13 @@ function bird.draw()
         end
 
         -- Устанавливаем ширину линий
-        love.graphics.setLineWidth(8)  -- Сделаем линии шире (ширина линии = 8 пикселей)
-
+        love.graphics.setLineWidth(4)  -- Сделаем линии шире (ширина линии = 8 пикселей)
         -- Рисуем две линии рогатки
         love.graphics.setColor(0.5, 0.2, 0.1)  -- Цвет рогатки
-        
         -- Первая линия
         love.graphics.line(slingStartX, slingStartY, mouseX, mouseY)
-        
         -- Вторая линия (отражённая)
         love.graphics.line(slingStartX + 100, slingStartY, mouseX, mouseY)
-        
         -- Рисуем птичку
         love.graphics.setColor(1, 1, 0)  -- Цвет птички (жёлтый)
         love.graphics.rectangle("fill", mouseX - bird.size / 2, mouseY - bird.size / 2, bird.size, bird.size)
